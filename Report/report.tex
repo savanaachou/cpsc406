@@ -569,6 +569,325 @@ q \in \{q_1,q_2\}.
 \subsection*{Week 2 Discord Question}
 In both exercises, we constructed product automata to recognize intersections and modified acceptance conditions to recognize unions or complements. Suppose instead we were given only one of the product automata (without being told it was constructed from two smaller DFAs). How could we determine whether this automaton can be decomposed into a product of two smaller DFAs?
 
+\subsection{Week 3}
+
+\section*{Homework 1}
+
+Let $\Sigma=\{a,b,c\}$ and consider the NFA $\mathcal A$.
+
+From the diagram we read:
+
+\[
+Q=\{0,1,2,3\}, \quad q_0=0, \quad F=\{2,3\}.
+\]
+
+Transitions:
+\[
+0 \xrightarrow{a,b} 0, 
+\quad
+0 \xrightarrow{a} 1,
+\quad
+1 \xrightarrow{b} 2,
+\quad
+1 \xrightarrow{c} 3.
+\]
+
+\subsection*{1. Description of $L(\mathcal A)$}
+
+From state $0$ we may read any number of $a$'s and $b$'s. 
+At some point we must take the transition $0 \xrightarrow{a} 1$, 
+and from state $1$ we must finish with either $b$ or $c$.
+
+Hence the language consists of all strings over $\{a,b\}$,
+followed by an $a$, and ending with either $b$ or $c$.
+
+\[
+L(\mathcal A) = (a|b)^* a (b|c).
+\]
+
+\subsection*{2. Formal Definition of the NFA}
+
+\[
+\mathcal A = (Q,\Sigma,\delta,q_0,F)
+\]
+
+where
+
+\[
+Q=\{0,1,2,3\}, 
+\quad 
+\Sigma=\{a,b,c\},
+\quad
+q_0=0,
+\quad
+F=\{2,3\}.
+\]
+
+The transition function $\delta$ is:
+
+\[
+\begin{aligned}
+\delta(0,a) &= \{0,1\}, &
+\delta(0,b) &= \{0\}, &
+\delta(0,c) &= \varnothing, \\
+\\
+\delta(1,a) &= \varnothing, &
+\delta(1,b) &= \{2\}, &
+\delta(1,c) &= \{3\}, \\
+\\
+\delta(2,x) &= \varnothing \text{ for all } x \in \Sigma, \\
+\delta(3,x) &= \varnothing \text{ for all } x \in \Sigma.
+\end{aligned}
+\]
+
+\subsection*{3. All Paths for $v=abab$}
+
+We compute all runs that consume the entire word.
+
+\[
+0 \xrightarrow{a} \{0,1\}
+\]
+
+Branch 1:
+\[
+0 \xrightarrow{a} 0 
+\xrightarrow{b} 0 
+\xrightarrow{a} 1 
+\xrightarrow{b} 2
+\]
+
+This path ends in accepting state $2$.
+
+Branch 2:
+\[
+0 \xrightarrow{a} 1 
+\xrightarrow{b} 2
+\]
+
+State $2$ has no outgoing transitions, so the computation gets
+stuck before reading the whole word. So it is discarded.
+
+\medskip
+
+There is exactly one accepting path:
+
+\[
+0 \xrightarrow{a} 0 
+\xrightarrow{b} 0 
+\xrightarrow{a} 1 
+\xrightarrow{b} 2.
+\]
+
+\subsection*{4. Determinization via Power Set Construction}
+
+Start state:
+
+\[
+\{0\}.
+\]
+
+We compute reachable subsets.
+
+\[
+\begin{aligned}
+\delta(\{0\},a) &= \{0,1\}, \\
+\delta(\{0\},b) &= \{0\}, \\
+\delta(\{0\},c) &= \varnothing.
+\end{aligned}
+\]
+
+\[
+\begin{aligned}
+\delta(\{0,1\},a) &= \{0,1\}, \\
+\delta(\{0,1\},b) &= \{0,2\}, \\
+\delta(\{0,1\},c) &= \{3\}.
+\end{aligned}
+\]
+
+\[
+\begin{aligned}
+\delta(\{0,2\},a) &= \{0,1\}, \\
+\delta(\{0,2\},b) &= \{0\}, \\
+\delta(\{0,2\},c) &= \varnothing.
+\end{aligned}
+\]
+
+\[
+\delta(\{3\},x)=\varnothing \text{ for all } x \in \Sigma.
+\]
+
+\[
+\delta(\varnothing,x)=\varnothing \text{ for all } x \in \Sigma.
+\]
+
+\medskip
+
+Reachable DFA states:
+
+\[
+\{0\},\quad
+\{0,1\},\quad
+\{0,2\},\quad
+\{3\},\quad
+\varnothing.
+\]
+
+Accepting DFA states:
+
+\[
+\{0,2\}, \quad \{3\}.
+\]
+
+\subsubsection*{Transition Table}
+
+\[
+\begin{array}{|c|c|c|c|}
+\hline
+\text{State} & a & b & c \\
+\hline
+\{0\} & \{0,1\} & \{0\} & \varnothing \\
+\{0,1\} & \{0,1\} & \{0,2\} & \{3\} \\
+\{0,2\} & \{0,1\} & \{0\} & \varnothing \\
+\{3\} & \varnothing & \varnothing & \varnothing \\
+\varnothing & \varnothing & \varnothing & \varnothing \\
+\hline
+\end{array}
+\]
+
+\section*{Homework 2}
+
+Let $\Sigma=\{0,1\}$ and consider the NFA $\mathcal A$ with
+
+\[
+Q=\{q_0,q_1,q_2,q_3\}, 
+\quad q_0 \text{ start}, 
+\quad F=\{q_3\}.
+\]
+
+The transition function $\delta$ is:
+
+\[
+\begin{aligned}
+\delta(q_0,0)&=\{q_0\}, &
+\delta(q_0,1)&=\{q_0,q_1\},\\
+\delta(q_1,0)&=\varnothing, &
+\delta(q_1,1)&=\{q_2\},\\
+\delta(q_2,0)&=\{q_1,q_3\}, &
+\delta(q_2,1)&=\varnothing,\\
+\delta(q_3,0)&=\{q_3\}, &
+\delta(q_3,1)&=\{q_3\}.
+\end{aligned}
+\]
+
+
+\section*{1. Determinization via the Power Set Construction}
+
+The start state of the DFA is:
+
+\[
+\{q_0\}.
+\]
+
+We compute all reachable subsets.
+
+\subsection*{Reachable DFA States}
+
+\[
+\begin{aligned}
+S_0 &= \{q_0\} \\
+S_1 &= \{q_0,q_1\} \\
+S_2 &= \{q_0,q_1,q_2\} \\
+S_3 &= \{q_0,q_1,q_3\} \\
+S_4 &= \{q_0,q_3\} \\
+S_5 &= \{q_0,q_1,q_2,q_3\}
+\end{aligned}
+\]
+
+Accepting states are those containing $q_3$:
+
+\[
+S_3,\; S_4,\; S_5.
+\]
+
+\subsection*{Transition Table of $\mathcal A^{\mathrm D}$}
+
+\[
+\begin{array}{|c|c|c|}
+\hline
+\text{State} & 0 & 1 \\
+\hline
+\{q_0\} & \{q_0\} & \{q_0,q_1\} \\
+\{q_0,q_1\} & \{q_0\} & \{q_0,q_1,q_2\} \\
+\{q_0,q_1,q_2\} & \{q_0,q_1,q_3\} & \{q_0,q_1,q_2\} \\
+\{q_0,q_1,q_3\} & \{q_0,q_3\} & \{q_0,q_1,q_2,q_3\} \\
+\{q_0,q_3\} & \{q_0,q_3\} & \{q_0,q_1,q_3\} \\
+\{q_0,q_1,q_2,q_3\} & \{q_0,q_1,q_3\} & \{q_0,q_1,q_2,q_3\} \\
+\hline
+\end{array}
+\]
+
+\subsection*{Graphical Description}
+
+Rename the DFA states:
+
+\[
+\begin{aligned}
+A &= \{q_0\} \\
+B &= \{q_0,q_1\} \\
+C &= \{q_0,q_1,q_2\} \\
+D &= \{q_0,q_1,q_3\} \quad (\text{accepting}) \\
+E &= \{q_0,q_3\} \quad (\text{accepting}) \\
+F &= \{q_0,q_1,q_2,q_3\} \quad (\text{accepting})
+\end{aligned}
+\]
+
+Key transitions:
+
+\[
+\begin{aligned}
+A &\xrightarrow{1} B, \\
+B &\xrightarrow{1} C, \\
+C &\xrightarrow{0} D, \\
+D &\xrightarrow{0} E, \\
+E &\xrightarrow{1} D.
+\end{aligned}
+\]
+
+All accepting states remain accepting under further input.
+
+\section*{2. Is There a Smaller DFA?}
+
+Yes.
+
+Observe that all states containing $q_3$ are equivalent, because:
+
+\begin{itemize}
+\item Once $q_3$ is reached, the automaton remains in states containing $q_3$.
+\item All such states accept every continuation.
+\end{itemize}
+
+So the states
+\[
+\{q_0,q_1,q_3\},\quad
+\{q_0,q_3\},\quad
+\{q_0,q_1,q_2,q_3\}
+\]
+are equivalent and can be merged.
+
+After minimization, the DFA has \textbf{4 states}:
+
+\begin{enumerate}
+\item Start state
+\item After reading one $1$
+\item After reading $11$
+\item Accepting sink state (once $110$ appears)
+\end{enumerate}
+
+There exists a smaller DFA with \textbf{4 states} accepting the same language.
+
+\subsection*{Week 3 Discord Question}
+Is there a structural way to predict which subsets will collapse during minimization before fully constructing the DFA? In other words, can we detect equivalent subset-states early from properties of the original NFA?
+
 \section{Synthesis}
 
 \section{Evidence of Participation}
