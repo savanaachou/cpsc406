@@ -700,319 +700,277 @@ In both exercises, we constructed product automata to recognize intersections an
 
 \subsection{Week 3}
 
-\section*{Homework 1}
+\subsubsection*{Homework 1}
 
-Let $\Sigma=\{a,b,c\}$ and consider the NFA $\mathcal A$.
+Consider the NFA $\mathcal{A}$ over the alphabet $\Sigma = \{a, b, c\}$.
 
-From the diagram we read:
+\paragraph{Part 1: Description of the language.}
 
-\[
-Q=\{0,1,2,3\}, \quad q_0=0, \quad F=\{2,3\}.
-\]
-
-Transitions:
-\[
-0 \xrightarrow{a,b} 0, 
-\quad
-0 \xrightarrow{a} 1,
-\quad
-1 \xrightarrow{b} 2,
-\quad
-1 \xrightarrow{c} 3.
-\]
-
-\subsection*{1. Description of $L(\mathcal A)$}
-
-From state $0$ we may read any number of $a$'s and $b$'s. 
-At some point we must take the transition $0 \xrightarrow{a} 1$, 
-and from state $1$ we must finish with either $b$ or $c$.
-
-Hence the language consists of all strings over $\{a,b\}$,
-followed by an $a$, and ending with either $b$ or $c$.
-
-\[
-L(\mathcal A) = (a|b)^* a (b|c).
-\]
-
-\subsection*{2. Formal Definition of the NFA}
-
-\[
-\mathcal A = (Q,\Sigma,\delta,q_0,F)
-\]
-
-where
-
-\[
-Q=\{0,1,2,3\}, 
-\quad 
-\Sigma=\{a,b,c\},
-\quad
-q_0=0,
-\quad
-F=\{2,3\}.
-\]
-
-The transition function $\delta$ is:
-
-\[
-\begin{aligned}
-\delta(0,a) &= \{0,1\}, &
-\delta(0,b) &= \{0\}, &
-\delta(0,c) &= \varnothing, \\
-\\
-\delta(1,a) &= \varnothing, &
-\delta(1,b) &= \{2\}, &
-\delta(1,c) &= \{3\}, \\
-\\
-\delta(2,x) &= \varnothing \text{ for all } x \in \Sigma, \\
-\delta(3,x) &= \varnothing \text{ for all } x \in \Sigma.
-\end{aligned}
-\]
-
-\subsection*{3. All Paths for $v=abab$}
-
-We compute all runs that consume the entire word.
-
-\[
-0 \xrightarrow{a} \{0,1\}
-\]
-
-Branch 1:
-\[
-0 \xrightarrow{a} 0 
-\xrightarrow{b} 0 
-\xrightarrow{a} 1 
-\xrightarrow{b} 2
-\]
-
-This path ends in accepting state $2$.
-
-Branch 2:
-\[
-0 \xrightarrow{a} 1 
-\xrightarrow{b} 2
-\]
-
-State $2$ has no outgoing transitions, so the computation gets
-stuck before reading the whole word. So it is discarded.
-
-\medskip
-
-There is exactly one accepting path:
-
-\[
-0 \xrightarrow{a} 0 
-\xrightarrow{b} 0 
-\xrightarrow{a} 1 
-\xrightarrow{b} 2.
-\]
-
-\subsection*{4. Determinization via Power Set Construction}
-
-Start state:
-
-\[
-\{0\}.
-\]
-
-We compute reachable subsets.
-
-\[
-\begin{aligned}
-\delta(\{0\},a) &= \{0,1\}, \\
-\delta(\{0\},b) &= \{0\}, \\
-\delta(\{0\},c) &= \varnothing.
-\end{aligned}
-\]
-
-\[
-\begin{aligned}
-\delta(\{0,1\},a) &= \{0,1\}, \\
-\delta(\{0,1\},b) &= \{0,2\}, \\
-\delta(\{0,1\},c) &= \{3\}.
-\end{aligned}
-\]
-
-\[
-\begin{aligned}
-\delta(\{0,2\},a) &= \{0,1\}, \\
-\delta(\{0,2\},b) &= \{0\}, \\
-\delta(\{0,2\},c) &= \varnothing.
-\end{aligned}
-\]
-
-\[
-\delta(\{3\},x)=\varnothing \text{ for all } x \in \Sigma.
-\]
-
-\[
-\delta(\varnothing,x)=\varnothing \text{ for all } x \in \Sigma.
-\]
-
-\medskip
-
-Reachable DFA states:
-
-\[
-\{0\},\quad
-\{0,1\},\quad
-\{0,2\},\quad
-\{3\},\quad
-\varnothing.
-\]
-
-Accepting DFA states:
-
-\[
-\{0,2\}, \quad \{3\}.
-\]
-
-\subsubsection*{Transition Table}
-
-\[
-\begin{array}{|c|c|c|c|}
-\hline
-\text{State} & a & b & c \\
-\hline
-\{0\} & \{0,1\} & \{0\} & \varnothing \\
-\{0,1\} & \{0,1\} & \{0,2\} & \{3\} \\
-\{0,2\} & \{0,1\} & \{0\} & \varnothing \\
-\{3\} & \varnothing & \varnothing & \varnothing \\
-\varnothing & \varnothing & \varnothing & \varnothing \\
-\hline
-\end{array}
-\]
-
-\section*{Homework 2}
-
-Let $\Sigma=\{0,1\}$ and consider the NFA $\mathcal A$ with
-
-\[
-Q=\{q_0,q_1,q_2,q_3\}, 
-\quad q_0 \text{ start}, 
-\quad F=\{q_3\}.
-\]
-
-The transition function $\delta$ is:
-
-\[
-\begin{aligned}
-\delta(q_0,0)&=\{q_0\}, &
-\delta(q_0,1)&=\{q_0,q_1\},\\
-\delta(q_1,0)&=\varnothing, &
-\delta(q_1,1)&=\{q_2\},\\
-\delta(q_2,0)&=\{q_1,q_3\}, &
-\delta(q_2,1)&=\varnothing,\\
-\delta(q_3,0)&=\{q_3\}, &
-\delta(q_3,1)&=\{q_3\}.
-\end{aligned}
-\]
-
-
-\section*{1. Determinization via the Power Set Construction}
-
-The start state of the DFA is:
-
-\[
-\{q_0\}.
-\]
-
-We compute all reachable subsets.
-
-\subsection*{Reachable DFA States}
-
-\[
-\begin{aligned}
-S_0 &= \{q_0\} \\
-S_1 &= \{q_0,q_1\} \\
-S_2 &= \{q_0,q_1,q_2\} \\
-S_3 &= \{q_0,q_1,q_3\} \\
-S_4 &= \{q_0,q_3\} \\
-S_5 &= \{q_0,q_1,q_2,q_3\}
-\end{aligned}
-\]
-
-Accepting states are those containing $q_3$:
-
-\[
-S_3,\; S_4,\; S_5.
-\]
-
-\subsection*{Transition Table of $\mathcal A^{\mathrm D}$}
-
-\[
-\begin{array}{|c|c|c|}
-\hline
-\text{State} & 0 & 1 \\
-\hline
-\{q_0\} & \{q_0\} & \{q_0,q_1\} \\
-\{q_0,q_1\} & \{q_0\} & \{q_0,q_1,q_2\} \\
-\{q_0,q_1,q_2\} & \{q_0,q_1,q_3\} & \{q_0,q_1,q_2\} \\
-\{q_0,q_1,q_3\} & \{q_0,q_3\} & \{q_0,q_1,q_2,q_3\} \\
-\{q_0,q_3\} & \{q_0,q_3\} & \{q_0,q_1,q_3\} \\
-\{q_0,q_1,q_2,q_3\} & \{q_0,q_1,q_3\} & \{q_0,q_1,q_2,q_3\} \\
-\hline
-\end{array}
-\]
-
-\subsection*{Graphical Description}
-
-Rename the DFA states:
-
-\[
-\begin{aligned}
-A &= \{q_0\} \\
-B &= \{q_0,q_1\} \\
-C &= \{q_0,q_1,q_2\} \\
-D &= \{q_0,q_1,q_3\} \quad (\text{accepting}) \\
-E &= \{q_0,q_3\} \quad (\text{accepting}) \\
-F &= \{q_0,q_1,q_2,q_3\} \quad (\text{accepting})
-\end{aligned}
-\]
-
-Key transitions:
-
-\[
-\begin{aligned}
-A &\xrightarrow{1} B, \\
-B &\xrightarrow{1} C, \\
-C &\xrightarrow{0} D, \\
-D &\xrightarrow{0} E, \\
-E &\xrightarrow{1} D.
-\end{aligned}
-\]
-
-All accepting states remain accepting under further input.
-
-\section*{2. Is There a Smaller DFA?}
-
-Yes.
-
-Observe that all states containing $q_3$ are equivalent, because:
-
+By inspecting the diagram, we see that $\mathcal{A}$ accepts strings that:
 \begin{itemize}
-\item Once $q_3$ is reached, the automaton remains in states containing $q_3$.
-\item All such states accept every continuation.
+\item Begin with any combination of $a$'s and $b$'s (remaining in state $0$),
+\item Followed by exactly one $a$ (moving to state $1$),
+\item And end with either a $b$ (reaching accepting state $2$) or a $c$ (reaching accepting state $3$).
 \end{itemize}
 
-So the states
 \[
-\{q_0,q_1,q_3\},\quad
-\{q_0,q_3\},\quad
-\{q_0,q_1,q_2,q_3\}
+\boxed{L(\mathcal{A}) = (a \mid b)^* a (b \mid c)}
 \]
-are equivalent and can be merged.
 
-After minimization, the DFA has \textbf{4 states}:
+\paragraph{Part 2: Formal definition of the NFA.}
 
-\begin{enumerate}
-\item Start state
-\item After reading one $1$
-\item After reading $11$
-\item Accepting sink state (once $110$ appears)
-\end{enumerate}
+The automaton is defined as $\mathcal{A} = (Q, \Sigma, \delta, q_0, F)$ with:
+\begin{itemize}
+\item $Q = \{0,1,2,3\}$
+\item $\Sigma = \{a,b,c\}$
+\item Start state $q_0 = 0$
+\item Accepting states $F = \{2,3\}$
+\item Transition function $\delta: Q \times \Sigma \to \mathcal{P}(Q)$ given by:
+\end{itemize}
 
-There exists a smaller DFA with \textbf{4 states} accepting the same language.
+\begin{center}
+\begin{tabular}{c|ccc}
+$\delta$ & $a$ & $b$ & $c$ \\ \hline
+$0$ & $\{0,1\}$ & $\{0\}$ & $\emptyset$ \\
+$1$ & $\emptyset$ & $\{2\}$ & $\{3\}$ \\
+$2$ & $\emptyset$ & $\emptyset$ & $\emptyset$ \\
+$3$ & $\emptyset$ & $\emptyset$ & $\emptyset$
+\end{tabular}
+\end{center}
+
+\paragraph{Part 3: Tracing all paths for $w = abab$.}
+
+We examine all possible transitions through $\mathcal{A}$ for the input string $abab$:
+
+\medskip
+\noindent\textbf{Path 1:} $0 \xrightarrow{a} 0 \xrightarrow{b} 0 \xrightarrow{a} 0 \xrightarrow{b} 0$ (ends in state $0$, \textbf{not accepting})
+
+\noindent\textbf{Path 2:} $0 \xrightarrow{a} 0 \xrightarrow{b} 0 \xrightarrow{a} 1 \xrightarrow{b} 2$ (ends in state $2$, \textbf{ACCEPTING})
+
+\noindent\textbf{Path 3:} $0 \xrightarrow{a} 1 \xrightarrow{b} 2$ (cannot continue for remaining symbols)
+
+\medskip
+\noindent Visual representation of successful paths:
+
+\begin{center}
+\begin{tikzpicture}[
+  >=stealth,
+  node distance=2cm,
+  every state/.style={thick, minimum size=8mm},
+  initial text={},
+  level/.style={sibling distance=3cm, level distance=1.5cm}
+]
+
+\node[state] (00) {$0$};
+\node[state, below left=1.2cm and 1.5cm of 00] (01) {$0$};
+\node[state, below right=1.2cm and 1.5cm of 00] (11) {$1$};
+\node[state, below left=1.2cm and 0.8cm of 01] (02) {$0$};
+\node[state, below right=1.2cm and 0.8cm of 01] (12) {$1$};
+\node[state, below=1.2cm of 12] (22) {$2$};
+\node[state, below=1.2cm of 02] (03) {$0$};
+\node[state, below=1.2cm of 03] (04) {$0$};
+
+\path[->]
+  (00) edge node[above left]{$a$} (01)
+  (00) edge node[above right]{$a$} (11)
+  (01) edge node[above left]{$b$} (02)
+  (01) edge node[above right]{$b$} (12)
+  (12) edge node[right]{$a$} (22)
+  (02) edge node[left]{$a$} (03)
+  (03) edge node[left]{$b$} (04);
+
+\node[right=0.3cm of 22, accepting] {$\checkmark$};
+\node[right=0.3cm of 04] {$\times$};
+
+\end{tikzpicture}
+\end{center}
+
+Since at least one path reaches an accepting state, $w = abab$ is \textbf{accepted}.
+
+\paragraph{Part 4: Determinization via the power set construction.}
+
+The DFA $\mathcal{A}^D = (Q^D, \Sigma, \delta^D, q_0^D, F^D)$ is defined as:
+\begin{itemize}
+\item $Q^D = \mathcal{P}(Q)$ (we list only reachable subsets)
+\item $q_0^D = \{0\}$
+\item $F^D = \{S \subseteq Q \mid S \cap \{2,3\} \neq \emptyset\}$
+\item $\delta^D(S,x) = \bigcup_{q \in S} \delta(q,x)$
+\end{itemize}
+
+\medskip
+\noindent\textbf{Transition table for $\mathcal{A}^D$:}
+
+\begin{center}
+\begin{tabular}{c|ccc}
+State & $a$ & $b$ & $c$ \\ \hline
+$\to \{0\}$ & $\{0,1\}$ & $\{0\}$ & $\emptyset$ \\
+$\{0,1\}$ & $\{0,1\}$ & $\{0,2\}$ & $\{3\}$ \\
+$*\{0,2\}$ & $\{0,1\}$ & $\{0\}$ & $\emptyset$ \\
+$*\{3\}$ & $\emptyset$ & $\emptyset$ & $\emptyset$ \\
+$\emptyset$ & $\emptyset$ & $\emptyset$ & $\emptyset$
+\end{tabular}
+\end{center}
+
+\medskip
+\noindent\textbf{Transition diagram for $\mathcal{A}^D$:}
+
+\begin{center}
+\begin{tikzpicture}[
+  >=stealth,
+  shorten >=1pt,
+  node distance=2.5cm,
+  every state/.style={thick, minimum size=10mm},
+  initial text={}
+]
+
+\node[state, initial] (S0) {$\{0\}$};
+\node[state, right=of S0] (S01) {$\{0,1\}$};
+\node[state, accepting, below=of S01] (S02) {$\{0,2\}$};
+\node[state, accepting, right=of S01] (S3) {$\{3\}$};
+\node[state, below=of S0] (empty) {$\emptyset$};
+
+\path[->]
+  (S0) edge[loop above] node{$b$} ()
+  (S0) edge node[above]{$a$} (S01)
+  (S0) edge node[left]{$c$} (empty)
+  (S01) edge[loop above] node{$a$} ()
+  (S01) edge node[right]{$b$} (S02)
+  (S01) edge node[above]{$c$} (S3)
+  (S02) edge[bend left=20] node[left]{$a$} (S01)
+  (S02) edge node[below]{$b$} (S0)
+  (S02) edge node[below right]{$c$} (empty)
+  (S3) edge[bend right=30] node[above]{$a,b,c$} (empty)
+  (empty) edge[loop below] node{$a,b,c$} ();
+
+\end{tikzpicture}
+\end{center}
+
+The determinized automaton has \textbf{5 reachable states}.
+
+\subsubsection*{Homework 2}
+
+Consider the NFA $\mathcal{A}$ over $\Sigma = \{0,1\}$.
+
+\paragraph{Formal specification.}
+
+$\mathcal{A} = (Q, \Sigma, \delta, q_0, F)$ with:
+\begin{itemize}
+\item $Q = \{q_0, q_1, q_2, q_3\}$
+\item Start state $q_0$
+\item $F = \{q_3\}$
+\item Transition function $\delta$ as follows:
+\end{itemize}
+
+\begin{center}
+\begin{tabular}{c|cc}
+$\delta$ & $0$ & $1$ \\ \hline
+$q_0$ & $\{q_0\}$ & $\{q_0,q_1\}$ \\
+$q_1$ & $\{q_2\}$ & $\emptyset$ \\
+$q_2$ & $\{q_3\}$ & $\{q_1\}$ \\
+$q_3$ & $\{q_3\}$ & $\{q_3\}$
+\end{tabular}
+\end{center}
+
+\paragraph{Part 1: Determinization (power set construction).}
+
+Starting from $\{q_0\}$, the reachable subsets are computed:
+
+\begin{center}
+\begin{tabular}{c|cc}
+State & $0$ & $1$ \\ \hline
+$\to \{q_0\}$ & $\{q_0\}$ & $\{q_0,q_1\}$ \\
+$\{q_0,q_1\}$ & $\{q_0,q_2\}$ & $\{q_0,q_1\}$ \\
+$\{q_0,q_2\}$ & $\{q_0,q_3\}$ & $\{q_0,q_1\}$ \\
+$*\{q_0,q_3\}$ & $\{q_0,q_3\}$ & $\{q_0,q_1,q_3\}$ \\
+$*\{q_0,q_1,q_3\}$ & $\{q_0,q_2,q_3\}$ & $\{q_0,q_1,q_3\}$ \\
+$*\{q_0,q_2,q_3\}$ & $\{q_0,q_3\}$ & $\{q_0,q_1,q_3\}$
+\end{tabular}
+\end{center}
+
+\medskip
+\noindent\textbf{Transition diagram for the determinized DFA:}
+
+\begin{center}
+\begin{tikzpicture}[
+  >=stealth,
+  shorten >=1pt,
+  node distance=2.2cm,
+  every state/.style={thick, minimum size=11mm},
+  initial text={}
+]
+
+\node[state, initial] (q0) {$\{q_0\}$};
+\node[state, right=of q0] (q01) {$\{q_0,q_1\}$};
+\node[state, below=of q01] (q02) {$\{q_0,q_2\}$};
+\node[state, accepting, right=of q01] (q03) {$\{q_0,q_3\}$};
+\node[state, accepting, below=of q03] (q013) {$\{q_0,q_1,q_3\}$};
+\node[state, accepting, below=of q02] (q023) {$\{q_0,q_2,q_3\}$};
+
+\path[->]
+  (q0) edge[loop left] node{$0$} ()
+  (q0) edge node[above]{$1$} (q01)
+  (q01) edge[loop above] node{$1$} ()
+  (q01) edge node[right]{$0$} (q02)
+  (q02) edge node[above]{$1$} (q01)
+  (q02) edge node[above]{$0$} (q03)
+  (q03) edge[loop above] node{$0$} ()
+  (q03) edge node[right]{$1$} (q013)
+  (q013) edge[loop right] node{$1$} ()
+  (q013) edge node[right]{$0$} (q023)
+  (q023) edge[bend left=15] node[below]{$1$} (q013)
+  (q023) edge[bend right=30] node[below left]{$0$} (q03);
+
+\end{tikzpicture}
+\end{center}
+
+The determinized DFA has \textbf{6 reachable states}.
+
+\paragraph{Part 2: Minimal DFA.}
+
+Yes, a smaller DFA exists for the same language. The language consists of all strings containing the substring $100$:
+
+\[
+L(\mathcal{A}) = (0 \mid 1)^* 1 0 0 (0 \mid 1)^*
+\]
+
+\medskip
+\noindent Minimal DFA with 4 states:
+
+\begin{center}
+\begin{tikzpicture}[
+  >=stealth,
+  shorten >=1pt,
+  node distance=2.3cm,
+  every state/.style={thick, minimum size=9mm},
+  initial text={}
+]
+
+\node[state, initial] (s0) {$s_0$};
+\node[state, right=of s0] (s1) {$s_1$};
+\node[state, right=of s1] (s2) {$s_2$};
+\node[state, accepting, right=of s2] (s3) {$s_3$};
+
+\path[->]
+  (s0) edge[loop above] node{$0$} ()
+  (s0) edge[bend left=15] node[above]{$1$} (s1)
+  (s1) edge[bend left=15] node[below]{$1$} (s0)
+  (s1) edge node[above]{$0$} (s2)
+  (s2) edge[bend right=40] node[below]{$1$} (s0)
+  (s2) edge node[above]{$0$} (s3)
+  (s3) edge[loop above] node{$0,1$} ();
+
+\end{tikzpicture}
+\end{center}
+
+\noindent State meanings:
+\begin{itemize}
+\item $s_0$: no match for $100$ so far
+\item $s_1$: most recently saw $1$
+\item $s_2$: most recently saw $10$
+\item $s_3$: matched $100$ (accepting, remains accepting)
+\end{itemize}
+
+This minimal DFA reduces the number of states from 6 to \textbf{4} by tracking progress toward the target substring.
 
 \subsection*{Week 3 Discord Question}
 Is there a structural way to predict which subsets will collapse during minimization before fully constructing the DFA? In other words, can we detect equivalent subset-states early from properties of the original NFA?
