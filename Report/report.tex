@@ -1,7 +1,7 @@
 \documentclass{article}
 
 \usepackage{tikz} 
-\usetikzlibrary{automata, positioning, arrows} 
+\usetikzlibrary{automata, positioning, arrows.meta} 
 
 \usepackage{amsthm}
 \usepackage{amsfonts}
@@ -43,6 +43,8 @@
   breakatwhitespace=true,
   tabsize=3
 }
+
+\usepackage{booktabs}
 
 \newtheoremstyle{theorem}
   {\topsep}   % ABOVESPACE
@@ -974,6 +976,385 @@ This minimal DFA reduces the number of states from 6 to \textbf{4} by tracking p
 
 \subsection*{Week 3 Discord Question}
 Is there a structural way to predict which subsets will collapse during minimization before fully constructing the DFA? In other words, can we detect equivalent subset-states early from properties of the original NFA?
+
+\subsection{Week 4}
+
+\subsection*{The DFA $\mathcal{A}$}
+
+\begin{itemize}
+    \item \textbf{States:} $p = 1$, $q = 2$
+    \item \textbf{Start state:} $p$ (also an accept state, indicated by double circle)
+    \item \textbf{Accept states:} $\{p\}$
+    \item \textbf{Transitions:}
+\end{itemize}
+
+\begin{center}
+\begin{tabular}{c||c|c}
+\toprule
+\textbf{State} & $a$ & $b$ \\
+\midrule
+$\rightarrow\!*\, p$ & $p$ & $q$ \\
+$q$                  & $p$ & $q$ \\
+\bottomrule
+\end{tabular}
+\end{center}
+
+\begin{center}
+\begin{tikzpicture}[
+    shorten >=2pt, node distance=3.5cm, on grid, auto,
+    >={Stealth[length=6pt]}
+]
+    \node[state, initial, accepting] (p) {$p$};
+    \node[state, right=of p]         (q) {$q$};
+    \path[->]
+        (p) edge[loop above]          node {$a$} (p)
+        (p) edge[bend left=20]        node {$b$} (q)
+        (q) edge[bend left=20]        node {$a$} (p)
+        (q) edge[loop right]          node {$b$} (q);
+\end{tikzpicture}
+\end{center}
+
+\section*{Kleene's Algorithm}
+
+\subsection*{Setup}
+
+Kleene's algorithm computes regular expressions $R^{(k)}_{ij}$ representing the set of all strings that take state $i$ to state $j$ using only intermediate states from $\{1, \ldots, k\}$.
+
+\medskip
+The recurrence is:
+\[
+R^{(k)}_{ij} = R^{(k-1)}_{ik}\left(R^{(k-1)}_{kk}\right)^* R^{(k-1)}_{kj} \;+\; R^{(k-1)}_{ij}
+\]
+
+with base case (no intermediate states, $k=0$):
+\[
+R^{(0)}_{ij} =
+\begin{cases}
+a_1 + a_2 + \cdots + a_m & \text{if there are transitions } i \xrightarrow{a_\ell} j \text{ (and } i \neq j\text{)} \\
+a_1 + \cdots + a_m + \varepsilon & \text{if } i = j \text{ and there are transitions } i \xrightarrow{a_\ell} i \\
+\varepsilon & \text{if } i = j \text{ and no self-loop} \\
+\emptyset & \text{if no transition from } i \text{ to } j
+\end{cases}
+\]
+
+\subsection*{Step 0: Base Cases $R^{(0)}_{ij}$}
+
+Reading directly from the transition table (states $1 = p$, $2 = q$):
+
+\begin{align*}
+R^{(0)}_{11} &= a + \varepsilon = a^* \quad \text{(self-loop on } a \text{, plus } \varepsilon \text{ for staying)} \\[4pt]
+R^{(0)}_{12} &= b \quad \text{(transition } p \xrightarrow{b} q \text{)} \\[4pt]
+R^{(0)}_{21} &= a \quad \text{(transition } q \xrightarrow{a} p \text{)} \\[4pt]
+R^{(0)}_{22} &= b + \varepsilon = b^* \quad \text{(self-loop on } b \text{, plus } \varepsilon\text{)}
+\end{align*}
+
+\medskip
+\noindent\textit{Note:} Since $R^{(0)}_{ii}$ is used inside a Kleene star later, we keep them as $a+\varepsilon$ and $b+\varepsilon$ here for clarity, but note $(a+\varepsilon)^* = a^*$ and $(b+\varepsilon)^* = b^*$.
+
+\subsection*{Step 1: $R^{(1)}_{ij}$ — Intermediate state allowed: $\{1\}$}
+
+Using the recurrence with $k = 1$:
+\[
+R^{(1)}_{ij} = R^{(0)}_{i1}\left(R^{(0)}_{11}\right)^* R^{(0)}_{1j} + R^{(0)}_{ij}
+\]
+
+Note $(R^{(0)}_{11})^* = (a + \varepsilon)^* = a^*$.
+
+\medskip
+\noindent$\boldsymbol{R^{(1)}_{11}}$:
+\[
+R^{(1)}_{11} = R^{(0)}_{11}(R^{(0)}_{11})^* R^{(0)}_{11} + R^{(0)}_{11}
+= (a+\varepsilon)\cdot a^* \cdot (a+\varepsilon) + (a+\varepsilon)
+= a^* + (a+\varepsilon) = a^*
+\]
+\[
+\boxed{R^{(1)}_{11} = a^*}
+\]
+
+\medskip
+\noindent$\boldsymbol{R^{(1)}_{12}}$:
+\[
+R^{(1)}_{12} = R^{(0)}_{11}(R^{(0)}_{11})^* R^{(0)}_{12} + R^{(0)}_{12}
+= (a+\varepsilon)\cdot a^* \cdot b + b
+= a^*b + b = a^*b
+\]
+\[
+\boxed{R^{(1)}_{12} = a^*b}
+\]
+
+\medskip
+\noindent$\boldsymbol{R^{(1)}_{21}}$:
+\[
+R^{(1)}_{21} = R^{(0)}_{21}(R^{(0)}_{11})^* R^{(0)}_{11} + R^{(0)}_{21}
+= a \cdot a^* \cdot (a+\varepsilon) + a
+= a \cdot a^* + a = a^+
+\]
+
+Since $a \cdot a^* = a^+$ and $a^+ + a = a^+$:
+\[
+\boxed{R^{(1)}_{21} = a^+}
+\]
+
+\medskip
+\noindent$\boldsymbol{R^{(1)}_{22}}$:
+\[
+R^{(1)}_{22} = R^{(0)}_{21}(R^{(0)}_{11})^* R^{(0)}_{12} + R^{(0)}_{22}
+= a \cdot a^* \cdot b + (b+\varepsilon)
+= a^+b + b + \varepsilon
+= a^*b + \varepsilon
+\]
+\[
+\boxed{R^{(1)}_{22} = a^*b + \varepsilon}
+\]
+
+\subsection*{Step 2: $R^{(2)}_{ij}$ — Intermediate states allowed: $\{1, 2\}$}
+
+Using the recurrence with $k = 2$:
+\[
+R^{(2)}_{ij} = R^{(1)}_{i2}\left(R^{(1)}_{22}\right)^* R^{(1)}_{2j} + R^{(1)}_{ij}
+\]
+
+Note $(R^{(1)}_{22})^* = (a^*b + \varepsilon)^* = (a^*b)^*$.
+
+\medskip
+\noindent$\boldsymbol{R^{(2)}_{11}}$ \textbf{(needed for the final answer):}
+\[
+R^{(2)}_{11} = R^{(1)}_{12}(R^{(1)}_{22})^* R^{(1)}_{21} + R^{(1)}_{11}
+= a^*b \cdot (a^*b)^* \cdot a^+ + a^*
+= a^*b(a^*b)^* a^+ + a^*
+= a^*(a^*b)^+ a^+ + a^*
+\]
+
+We can simplify $a^*b(a^*b)^*= a^*(ba^*)^*b$ (rewriting the iteration):
+\[
+\boxed{R^{(2)}_{11} = a^*\bigl(ba^+\bigr)^*}
+\]
+
+\textit{Verification of the simplification:} $a^*b(a^*b)^*a^+ + a^*$. Each term $b(a^*b)^*a^+$ represents one or more $b$-blocks each followed by one or more $a$'s. Factoring out the leading $a^*$:
+\[
+a^*b(a^*b)^* a^+ + a^* = a^*\bigl(b(a^*b)^* a^+ + \varepsilon\bigr) = a^*\bigl(ba^+)^* \text{ (by Arden's identity)}
+\]
+
+\medskip
+\noindent\textit{The remaining expressions for completeness:}
+
+\medskip
+\noindent$\boldsymbol{R^{(2)}_{12}}$:
+\[
+R^{(2)}_{12} = R^{(1)}_{12}(R^{(1)}_{22})^* R^{(1)}_{22} + R^{(1)}_{12}
+= a^*b(a^*b)^*(a^*b+\varepsilon) + a^*b
+= a^*b(a^*b)^* + a^*b = a^*(ba^*)^*b
+\]
+
+\medskip
+\noindent$\boldsymbol{R^{(2)}_{21}}$:
+\[
+R^{(2)}_{21} = R^{(1)}_{22}(R^{(1)}_{22})^* R^{(1)}_{21} + R^{(1)}_{21}
+= (a^*b+\varepsilon)(a^*b)^* a^+ + a^+
+= (a^*b)^* a^+ + a^+ = (a^*b)^* a^+
+\]
+
+\medskip
+\noindent$\boldsymbol{R^{(2)}_{22}}$:
+\[
+R^{(2)}_{22} = R^{(1)}_{22}(R^{(1)}_{22})^* R^{(1)}_{22} + R^{(1)}_{22}
+= (a^*b)^*(a^*b+\varepsilon) + (a^*b+\varepsilon)
+= (a^*b)^* + \varepsilon = (a^*b)^*
+\]
+
+\section*{Resulting Regular Expression for $L(\mathcal{A})$}
+
+The language $L(\mathcal{A})$ is accepted starting from the start state $p = 1$ and ending in any accept state. Since the only accept state is $p = 1$, we need all strings that start and end in state $1$, using any intermediate states $\{1,2\}$. This is given by $R^{(2)}_{11}$:
+
+\[
+\boxed{R \;=\; R^{(2)}_{11} \;=\; a^*\bigl(ba^+\bigr)^*}
+\]
+
+\subsection*{Interpretation}
+
+The language $L(R) = L(\mathcal{A})$ consists of all strings over $\{a, b\}$ that:
+\begin{itemize}
+    \item start with zero or more $a$'s, then
+    \item repeat zero or more times the pattern: one $b$ followed by one or more $a$'s.
+\end{itemize}
+
+In particular, every $b$ in an accepted string must be followed by at least one $a$. The string cannot end with $b$ (since $q$ is not an accept state). Examples: $\varepsilon,\ a,\ aa,\ aba,\ aaba,\ abba\ (\text{rejected}),\ bab\ (\text{rejected})$.
+
+\subsubsection*{Given DFA (Figure 4.15)}
+
+\begin{itemize}
+    \item \textbf{States:} $A, B, C, D, E, F, G, H, I$
+    \item \textbf{Start state:} $A$
+    \item \textbf{Accept states:} $C, F, I$
+\end{itemize}
+
+\begin{center}
+\begin{tabular}{c||c|c}
+\toprule
+\textbf{State} & \textbf{0} & \textbf{1} \\
+\midrule
+$\rightarrow A$ & $B$ & $E$ \\
+$B$             & $C$ & $F$ \\
+$*C$            & $D$ & $H$ \\
+$D$             & $E$ & $H$ \\
+$E$             & $F$ & $I$ \\
+$*F$            & $G$ & $B$ \\
+$G$             & $H$ & $B$ \\
+$H$             & $I$ & $C$ \\
+$*I$            & $A$ & $E$ \\
+\bottomrule
+\end{tabular}
+\end{center}
+
+\section*{Part (a): Table of Distinguishabilities}
+
+\subsection*{Method}
+
+Two states $p$ and $q$ are \textbf{distinguishable} if there exists some string $w$ such that exactly one of $\delta(p,w)$ and $\delta(q,w)$ is an accepting state. We build the table iteratively:
+
+\begin{enumerate}
+    \item \textbf{Base case:} Mark $\{p,q\}$ if exactly one is an accept state.
+    \item \textbf{Propagation:} Mark $\{p,q\}$ if for some input $x \in \{0,1\}$, the pair $\{\delta(p,x),\,\delta(q,x)\}$ is already marked.
+    \item Repeat until no new pairs can be marked.
+\end{enumerate}
+
+\subsection*{Base Case}
+
+Accept states $= \{C, F, I\}$; \quad Non-accept states $= \{A, B, D, E, G, H\}$.
+
+All pairs $\{p, q\}$ with one accept and one non-accept state are immediately marked distinguishable ($\times$).
+
+\subsection*{Propagation}
+
+We check all remaining pairs (both accept, or both non-accept):
+
+\medskip
+\noindent\textbf{Non-accept pairs that become distinguishable:}
+
+\begin{align*}
+\{A,B\} &: \delta(A,0)=B,\ \delta(B,0)=C \Rightarrow \{B,C\}\ \text{marked} \Rightarrow \textbf{marked}\ (\times) \\
+\{A,E\} &: \delta(A,0)=B,\ \delta(E,0)=F \Rightarrow \{B,F\}\ \text{marked} \Rightarrow \textbf{marked}\ (\times) \\
+\{A,H\} &: \delta(A,0)=B,\ \delta(H,0)=I \Rightarrow \{B,I\}\ \text{marked} \Rightarrow \textbf{marked}\ (\times) \\
+\{B,D\} &: \delta(B,0)=C,\ \delta(D,0)=E \Rightarrow \{C,E\}\ \text{marked} \Rightarrow \textbf{marked}\ (\times) \\
+\{B,G\} &: \delta(B,0)=C,\ \delta(G,0)=H \Rightarrow \{C,H\}\ \text{marked} \Rightarrow \textbf{marked}\ (\times) \\
+\{D,E\} &: \delta(D,0)=E,\ \delta(E,0)=F \Rightarrow \{E,F\}\ \text{marked} \Rightarrow \textbf{marked}\ (\times) \\
+\{D,H\} &: \delta(D,0)=E,\ \delta(H,0)=I \Rightarrow \{E,I\}\ \text{marked} \Rightarrow \textbf{marked}\ (\times) \\
+\{E,G\} &: \delta(E,0)=F,\ \delta(G,0)=H \Rightarrow \{F,H\}\ \text{marked} \Rightarrow \textbf{marked}\ (\times) \\
+\{G,H\} &: \delta(G,0)=H,\ \delta(H,0)=I \Rightarrow \{H,I\}\ \text{marked} \Rightarrow \textbf{marked}\ (\times)
+\end{align*}
+
+\medskip
+\noindent\textbf{Pairs that remain indistinguishable (no marking possible):}
+
+\begin{align*}
+\{A,D\} &: \delta(\cdot,0)\to\{B,E\},\ \delta(\cdot,1)\to\{E,H\} \quad \text{(both unmarked)} \\
+\{A,G\} &: \delta(\cdot,0)\to\{B,H\},\ \delta(\cdot,1)\to\{E,B\} \quad \text{(both unmarked)} \\
+\{D,G\} &: \delta(\cdot,0)\to\{E,H\},\ \delta(\cdot,1)\to\{H,B\} \quad \text{(both unmarked)} \\
+\{B,E\} &: \delta(\cdot,0)\to\{C,F\},\ \delta(\cdot,1)\to\{F,I\} \quad \text{(both accept pairs, unmarked)} \\
+\{B,H\} &: \delta(\cdot,0)\to\{C,I\},\ \delta(\cdot,1)\to\{F,C\} \quad \text{(both accept pairs, unmarked)} \\
+\{E,H\} &: \delta(\cdot,0)\to\{F,I\},\ \delta(\cdot,1)\to\{I,C\} \quad \text{(both accept pairs, unmarked)} \\
+\{C,F\} &: \delta(\cdot,0)\to\{D,G\},\ \delta(\cdot,1)\to\{H,B\} \quad \text{(both unmarked)} \\
+\{C,I\} &: \delta(\cdot,0)\to\{D,A\},\ \delta(\cdot,1)\to\{H,E\} \quad \text{(both unmarked)} \\
+\{F,I\} &: \delta(\cdot,0)\to\{G,A\},\ \delta(\cdot,1)\to\{B,E\} \quad \text{(both unmarked)}
+\end{align*}
+
+\subsection*{Complete Distinguishability Table}
+
+In the table below, $\times$ denotes a distinguishable pair and $\equiv$ denotes an indistinguishable (equivalent) pair. Pairs that are trivially marked (one accept, one non-accept) are shown as $\times$.
+
+\begin{center}
+\renewcommand{\arraystretch}{1.4}
+\begin{tabular}{c|cccccccc}
+  & $A$ & $B$ & $C$ & $D$ & $E$ & $F$ & $G$ & $H$ \\
+\hline
+$B$ & $\times$ & & & & & & & \\
+$C$ & $\times$ & $\times$ & & & & & & \\
+$D$ & $\equiv$ & $\times$ & $\times$ & & & & & \\
+$E$ & $\times$ & $\equiv$ & $\times$ & $\times$ & & & & \\
+$F$ & $\times$ & $\times$ & $\equiv$ & $\times$ & $\times$ & & & \\
+$G$ & $\equiv$ & $\times$ & $\times$ & $\equiv$ & $\times$ & $\times$ & & \\
+$H$ & $\times$ & $\equiv$ & $\times$ & $\times$ & $\equiv$ & $\times$ & $\times$ & \\
+$I$ & $\times$ & $\times$ & $\equiv$ & $\times$ & $\times$ & $\equiv$ & $\times$ & $\times$ \\
+\end{tabular}
+\end{center}
+
+\section*{Part (b): Minimum-State Equivalent DFA}
+
+\subsection*{Equivalence Classes}
+
+The indistinguishable pairs yield three equivalence classes:
+
+\begin{center}
+\begin{tabular}{cll}
+\toprule
+\textbf{New State} & \textbf{Original States} & \textbf{Role} \\
+\midrule
+$[A]$ & $\{A,\ D,\ G\}$ & Start state \\
+$[B]$ & $\{B,\ E,\ H\}$ & Non-accept \\
+$[C]$ & $\{C,\ F,\ I\}$ & Accept state \\
+\bottomrule
+\end{tabular}
+\end{center}
+
+\subsection*{Transition Table of Minimized DFA}
+
+Using representative states to compute transitions:
+
+\begin{center}
+\begin{tabular}{c||c|c}
+\toprule
+\textbf{State} & \textbf{0} & \textbf{1} \\
+\midrule
+$\rightarrow [A]$ & $\delta(A,0)=B \to [B]$ & $\delta(A,1)=E \to [B]$ \\
+$[B]$             & $\delta(B,0)=C \to [C]$ & $\delta(B,1)=F \to [C]$ \\
+$*[C]$            & $\delta(C,0)=D \to [A]$ & $\delta(C,1)=H \to [B]$ \\
+\bottomrule
+\end{tabular}
+\end{center}
+
+\medskip
+Written more compactly:
+
+\begin{center}
+\begin{tabular}{c||c|c}
+\toprule
+\textbf{State} & \textbf{0} & \textbf{1} \\
+\midrule
+$\rightarrow [A]$ & $[B]$ & $[B]$ \\
+$[B]$             & $[C]$ & $[C]$ \\
+$*[C]$            & $[A]$ & $[B]$ \\
+\bottomrule
+\end{tabular}
+\end{center}
+
+\subsection*{Diagram of Minimized DFA}
+
+\begin{center}
+\begin{tikzpicture}[
+    shorten >=2pt,
+    node distance=3cm,
+    on grid,
+    auto,
+    >={Stealth[length=6pt]}
+]
+    \node[state, initial]           (A) {$[A]$};
+    \node[state, right=of A]        (B) {$[B]$};
+    \node[state, accepting, right=of B] (C) {$[C]$};
+
+    \path[->]
+        (A) edge node {0,1} (B)
+        (B) edge node {0,1} (C)
+        (C) edge [bend left=45] node {0} (A)
+        (C) edge [bend right=35] node[below] {1} (B);
+\end{tikzpicture}
+\end{center}
+
+\subsection*{Summary}
+
+The original 9-state DFA is reduced to a \textbf{3-state} minimum DFA. The minimized automaton accepts strings whose length is congruent to $2 \pmod{3}$, i.e.\ strings of length $2, 5, 8, 11, \ldots$
+
+\subsection*{Week 4 Discord Question}
+When minimizing a DFA, does it matter which accepting state you use as a representative for an equivalence class when computing the transitions of the minimized DFA?
 
 \section{Synthesis}
 
