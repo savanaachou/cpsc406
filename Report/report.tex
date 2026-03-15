@@ -1356,6 +1356,125 @@ The original 9-state DFA is reduced to a \textbf{3-state} minimum DFA. The minim
 \subsection*{Week 4 Discord Question}
 When minimizing a DFA, does it matter which accepting state you use as a representative for an equivalence class when computing the transitions of the minimized DFA?
 
+\subsection{Week 5}
+
+\noindent Show that the following languages are not regular using the pumping lemma:
+\begin{align*}
+L_1 &= \{a^n b^m \in \{a,b\}^* \mid n, m \in \mathbb{N},\; n > m \geq 0\} \\
+L_2 &= \{a^{n^2} \in \{a\}^* \mid n \in \mathbb{N},\; n \geq 1\} \\
+L_3 &= \{a^p \in \{a\}^* \mid p \in \mathbb{N},\; p \text{ prime}\} \\
+L_4 &= \{a^k b^m a^{k+m} \mid k, m \geq 0\}
+\end{align*}
+ 
+\section*{$L_1 = \{a^n b^m \mid n > m \geq 0\}$}
+ 
+\textbf{Assume} $L_1$ is regular, so it satisfies the pumping lemma with constant $n$.
+ 
+\medskip
+\textbf{Choose} $w = a^{n+1}b^n \in L_1$ (since $n+1 > n \geq 0$), with $|w| = 2n+1 \geq n$. \checkmark
+ 
+\medskip
+\textbf{Decompose} $w = xyz$. By condition~2, $|xy| \leq n < n+1$, so $xy$ lies entirely within
+the $a^{n+1}$ prefix. Hence $x = a^i$, $y = a^j$ with $j \geq 1$ (condition~1), and
+$z = a^{n+1-i-j}b^n$.
+ 
+\medskip
+\textbf{Pump down} with $k = 0$:
+\[
+  w' = xz = a^{n+1-j}b^n.
+\]
+Since $j \geq 1$, we have $|w'|_a = n+1-j \leq n = |w'|_b$, so $w' \notin L_1$.
+ 
+\medskip
+\textbf{Contradiction.} $\square$
+ 
+\section*{$L_2 = \{a^{n^2} \mid n \geq 1\}$}
+ 
+\textbf{Assume} $L_2$ is regular with pumping constant $n$.
+ 
+\medskip
+\textbf{Choose} $w = a^{n^2} \in L_2$, with $|w| = n^2 \geq n$. \checkmark
+ 
+\medskip
+\textbf{Decompose} $w = xyz$. Since the alphabet is $\{a\}$, we have $x = a^i$, $y = a^j$,
+$z = a^{n^2 - i - j}$ with $j \geq 1$ (condition~1) and $i + j \leq n$ (condition~2).
+ 
+\medskip
+\textbf{Pump} with $k = 2$:
+\[
+  w' = xy^2 z = a^{n^2 + j}.
+\]
+For $w' \in L_2$ we would need $n^2 + j = m^2$ for some integer $m \geq 1$. However,
+since $1 \leq j \leq n$:
+\[
+  n^2 < n^2 + j \leq n^2 + n < n^2 + 2n + 1 = (n+1)^2.
+\]
+Thus $n^2 + j$ lies strictly between two consecutive perfect squares and is therefore not
+a perfect square, giving $w' \notin L_2$.
+ 
+\medskip
+\textbf{Contradiction.} $\square$
+ 
+\section*{$L_3 = \{a^p \mid p \text{ prime}\}$}
+ 
+\textbf{Assume} $L_3$ is regular with pumping constant $n$.
+ 
+\medskip
+\textbf{Choose} a prime $p \geq n + 2$ (such a prime exists since there are infinitely many
+primes), and let $w = a^p \in L_3$, so $|w| = p \geq n$. \checkmark
+ 
+\medskip
+\textbf{Decompose} $w = xyz$ with $x = a^i$, $y = a^j$ ($j \geq 1$, $i+j \leq n$),
+$z = a^{p-i-j}$. Set $s := i + j$ so that $1 \leq s \leq n$.
+ 
+\medskip
+\textbf{Pump} with $k = p - j$. Note $k \geq 1$ because $j \leq n \leq p - 2 < p$.
+The pumped word has length:
+\[
+  |xy^{p-j}z| = i + (p-j)\cdot j + (p - i - j)
+               = p + j(p - j - 1)
+               = p + pj - j^2 - j
+               = p(1+j) - j(j+1)
+               = (p - j)(1 + j).
+\]
+Since $p - j \geq p - n \geq 2$ and $j + 1 \geq 2$, the length $(p-j)(1+j)$ is a product of
+two integers both at least $2$, hence \emph{composite}. Therefore $xy^{p-j}z \notin L_3$.
+ 
+\medskip
+\textbf{Contradiction.} $\square$
+ 
+\section*{$L_4 = \{a^k b^m a^{k+m} \mid k, m \geq 0\}$}
+ 
+\textbf{Assume} $L_4$ is regular with pumping constant $n$.
+ 
+\medskip
+\textbf{Choose} $w = a^n b^n a^{2n} \in L_4$ (setting $k = m = n$), with $|w| = 4n \geq n$. \checkmark
+ 
+\medskip
+\textbf{Decompose} $w = xyz$. By condition~2, $|xy| \leq n$, so $xy$ lies entirely within
+the initial $a^n$ block. Hence $x = a^i$, $y = a^j$ with $j \geq 1$, and
+$z = a^{n-i-j}b^n a^{2n}$.
+ 
+\medskip
+\textbf{Pump} with $k = 2$:
+\[
+  w' = xy^2 z = a^{n+j}\, b^n\, a^{2n}.
+\]
+For $w' \in L_4$ we would need $w' = a^{k'} b^{m'} a^{k'+m'}$ for some $k', m' \geq 0$.
+Reading the structure of $w'$: $k' = n + j$ and $m' = n$, so the trailing $a$-block must
+have length
+\[
+  k' + m' = (n + j) + n = 2n + j.
+\]
+But the trailing block of $w'$ has length $2n$. Since $j \geq 1$, we have $2n < 2n + j$,
+so $w' \notin L_4$.
+ 
+\medskip
+\textbf{Contradiction.} $\square$
+
+\subsection*{Week 5 Discord Question}
+ Is it always possible to find such a "clever" k, or are there non-regular languages where no single pumping value works and you need a different proof strategy entirely?
+
 \section{Synthesis}
 
 \section{Evidence of Participation}
