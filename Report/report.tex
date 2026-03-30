@@ -1475,6 +1475,197 @@ so $w' \notin L_4$.
 \subsection*{Week 5 Discord Question}
  Is it always possible to find such a "clever" k, or are there non-regular languages where no single pumping value works and you need a different proof strategy entirely?
 
+\subsection{Week 6}
+\section*{Exercise A Solutions}
+
+\subsection*{1. TM for $L = \{1 0^n : n \in \mathbb{N}\}$ that outputs $1 0^{n+1}$}
+
+\textbf{Idea:} Scan to the right over all symbols until the first blank is found, then write an additional $0$.
+
+\textbf{Turing Machine:}
+\[
+M = (Q, \Sigma, \Gamma, \delta, q_0, B, F)
+\]
+where:
+\begin{itemize}
+    \item $Q = \{q_0, q_1, q_{accept}\}$
+    \item $\Sigma = \{0,1\}$
+    \item $\Gamma = \{0,1,B\}$
+    \item $F = \{q_{accept}\}$
+\end{itemize}
+
+\textbf{Transition function:}
+\[
+\begin{aligned}
+\delta(q_0, 1) &= (q_1, 1, R) \\
+\delta(q_1, 0) &= (q_1, 0, R) \\
+\delta(q_1, B) &= (q_{accept}, 0, R)
+\end{aligned}
+\]
+
+\textbf{Example:} Input $100 \rightarrow$ Output $1000$
+
+\bigskip
+
+\subsection*{2. TM for $L = \{1 0^n : n \in \mathbb{N}\}$ that outputs $1$}
+
+\textbf{Idea:} Keep the leading $1$ and erase all trailing $0$'s.
+
+\textbf{Turing Machine:}
+\[
+M = (Q, \Sigma, \Gamma, \delta, q_0, B, F)
+\]
+where:
+\begin{itemize}
+    \item $Q = \{q_0, q_1, q_{accept}\}$
+    \item $\Sigma = \{0,1\}$
+    \item $\Gamma = \{0,1,B\}$
+    \item $F = \{q_{accept}\}$
+\end{itemize}
+
+\textbf{Transition function:}
+\[
+\begin{aligned}
+\delta(q_0, 1) &= (q_1, 1, R) \\
+\delta(q_1, 0) &= (q_1, B, R) \\
+\delta(q_1, B) &= (q_{accept}, B, R)
+\end{aligned}
+\]
+
+\textbf{Example:} Input $1000 \rightarrow$ Output $1$
+
+\bigskip
+
+\subsection*{3. TM for all binary strings that swaps $0$ and $1$}
+
+\textbf{Idea:} Traverse the tape and replace each $0$ with $1$ and each $1$ with $0$.
+
+\textbf{Turing Machine:}
+\[
+M = (Q, \Sigma, \Gamma, \delta, q_0, B, F)
+\]
+where:
+\begin{itemize}
+    \item $Q = \{q_0, q_{accept}\}$
+    \item $\Sigma = \{0,1\}$
+    \item $\Gamma = \{0,1,B\}$
+    \item $F = \{q_{accept}\}$
+\end{itemize}
+
+\textbf{Transition function:}
+\[
+\begin{aligned}
+\delta(q_0, 0) &= (q_0, 1, R) \\
+\delta(q_0, 1) &= (q_0, 0, R) \\
+\delta(q_0, B) &= (q_{accept}, B, R)
+\end{aligned}
+\]
+
+\textbf{Example:} Input $1010 \rightarrow$ Output $0101$
+
+\section*{Exercise 1: Decidability and r.e. Languages}
+
+We analyze each statement:
+
+\bigskip
+
+\textbf{1. If $L_1$ and $L_2$ are decidable, then so is $L_1 \cup L_2$.}
+
+\textbf{True.}
+
+\textbf{Argument:}  
+Since $L_1$ and $L_2$ are decidable, there exist Turing machines $M_1$ and $M_2$ that halt on all inputs.  
+Construct a machine $M$ that on input $w$:
+\begin{itemize}
+    \item Runs $M_1$ on $w$.
+    \item Runs $M_2$ on $w$.
+    \item Accepts if either accepts; otherwise rejects.
+\end{itemize}
+Since both machines halt, $M$ halts, so $L_1 \cup L_2$ is decidable.
+
+\bigskip
+
+\textbf{2. If $L$ is decidable, then so is $\overline{L} = \Sigma^* \setminus L$.}
+
+\textbf{True.}
+
+\textbf{Argument:}  
+If $M$ decides $L$, construct $M'$ that:
+\begin{itemize}
+    \item Runs $M$ on input $w$.
+    \item If $M$ accepts, reject.
+    \item If $M$ rejects, accept.
+\end{itemize}
+Thus, $M'$ decides $\overline{L}$.
+
+\bigskip
+
+\textbf{3. If $L$ is decidable, then so is $L^*$.}
+
+\textbf{True.}
+
+\textbf{Argument:}  
+Given input $w$, check all possible ways to split $w$ into substrings
+\[
+w = w_1 w_2 \cdots w_k
+\]
+and verify whether each $w_i \in L$. Since $L$ is decidable, each check halts.  
+There are finitely many splits, so we can test all of them and decide whether $w \in L^*$.
+
+\bigskip
+
+\textbf{4. If $L_1$ and $L_2$ are r.e., then $L_1 \cup L_2$ is r.e.}
+
+\textbf{True.}
+
+\textbf{Argument:}  
+Let $M_1$ and $M_2$ recognize $L_1$ and $L_2$. Construct a machine that:
+\begin{itemize}
+    \item Simulates both $M_1$ and $M_2$ in parallel (dovetailing).
+    \item Accepts if either machine accepts.
+\end{itemize}
+Thus, $L_1 \cup L_2$ is recursively enumerable.
+
+\bigskip
+
+\textbf{5. If $L$ is r.e., then so is $\overline{L}$.}
+
+\textbf{False.}
+
+\textbf{Counterexample:}  
+Let $L$ be the Halting Problem:
+\[
+L = \{ \langle M,w \rangle : M \text{ halts on input } w \}
+\]
+$L$ is r.e., but $\overline{L}$ (non-halting pairs) is not r.e.  
+Thus, the statement is false.
+
+\bigskip
+
+\textbf{6. If $L$ is r.e., then so is $L^*$.}
+
+\textbf{True.}
+
+\textbf{Argument:}  
+Given input $w$, enumerate all ways to split $w$ into substrings and simulate the recognizer for $L$ on each substring in parallel.  
+If a decomposition exists where all substrings are accepted, then accept.  
+Thus, $L^*$ is r.e.
+
+\bigskip
+
+\textbf{Summary:}
+\begin{itemize}
+    \item (1) True
+    \item (2) True
+    \item (3) True
+    \item (4) True
+    \item (5) False
+    \item (6) True
+\end{itemize}
+
+\subsection*{Week 6 Discord Question}
+Why does giving a Turing machine the ability to loop forever increase its computational power compared to DFAs?
+
 \section{Synthesis}
 
 \section{Evidence of Participation}
