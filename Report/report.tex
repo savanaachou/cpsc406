@@ -1666,6 +1666,208 @@ Thus, $L^*$ is r.e.
 \subsection*{Week 6 Discord Question}
 Why does giving a Turing machine the ability to loop forever increase its computational power compared to DFAs?
 
+\subsection{Week 7}
+
+\section*{Problems on Decidability Exercise 2: Solution}
+
+We classify each language as decidable, recursively enumerable (r.e.), or co-recursively enumerable (co-r.e.).
+
+\subsection*{1. $L_1 = \{ M \mid M \text{ halts on itself} \}$}
+
+\textbf{Claim:} $L_1$ is recursively enumerable but not decidable and not co-r.e.
+
+\textbf{Proof:}
+To show $L_1$ is recursively enumerable, we construct a Turing machine that simulates $M$ on input $M$. If $M$ halts on input $M$, the simulation halts and accepts. If $M$ does not halt, the simulation runs forever. Hence, $L_1$ is r.e.
+
+To show $L_1$ is not decidable, note that this is a special case of the Halting Problem, which is undecidable.
+
+To show $L_1$ is not co-r.e., observe that if both $L_1$ and its complement were recursively enumerable, then $L_1$ would be decidable, which is a contradiction.
+
+\hfill $\square$
+
+\subsection*{2. $L_2 = \{ (M,w) \mid M \text{ halts on } w \}$}
+
+\textbf{Claim:} $L_2$ is recursively enumerable but not decidable and not co-r.e.
+
+\textbf{Proof:}
+To show $L_2$ is recursively enumerable, simulate $M$ on input $w$. If $M$ halts, accept; otherwise, run forever. Thus, $L_2$ is r.e.
+
+$L_2$ is exactly the Halting Problem, which is known to be undecidable.
+
+If $L_2$ were also co-r.e., then it would be decidable. Since it is not decidable, it cannot be co-r.e.
+
+\hfill $\square$
+
+\subsection*{3. $L_3 = \{ (M,w,k) \mid M \text{ halts on } w \text{ in at most } k \text{ steps} \}$}
+
+\textbf{Claim:} $L_3$ is decidable (and hence both r.e.\ and co-r.e.).
+
+\textbf{Proof:}
+We construct a decider as follows: on input $(M,w,k)$, simulate $M$ on input $w$ for at most $k$ steps. If $M$ halts within $k$ steps, accept; otherwise, reject.
+
+Since this procedure always halts after at most $k$ steps, $L_3$ is decidable. Therefore, it is also both recursively enumerable and co-recursively enumerable.
+
+\hfill $\square$
+
+\subsection*{Summary}
+
+\begin{center}
+\begin{tabular}{c|c|c|c}
+Language & Decidable & r.e. & co-r.e. \\
+\hline
+$L_1$ & No & Yes & No \\
+$L_2$ & No & Yes & No \\
+$L_3$ & Yes & Yes & Yes \\
+\end{tabular}
+\end{center}
+
+\section*{Landau Notation: Solutions to Exercises 2-5}
+
+\subsection*{Exercise 2}
+
+Let $f,g,h : \mathbb{N} \to \mathbb{R}_{\geq 0}$.
+
+\begin{enumerate}
+    \item \textbf{$f \in \mathcal{O}(f)$}
+
+    Choose $M = 1$ and any $N \in \mathbb{N}$. Then for all $n \geq N$,
+    \[
+    f(n) \leq 1 \cdot f(n),
+    \]
+    hence $f \in \mathcal{O}(f)$.
+
+    \item \textbf{If $c > 0$, then $\mathcal{O}(c f) = \mathcal{O}(f)$}
+
+    ($\subseteq$) Suppose $h \in \mathcal{O}(c f)$. Then there exist $M,N$ such that
+    \[
+    h(n) \leq M \cdot c f(n) = (Mc) f(n),
+    \]
+    so $h \in \mathcal{O}(f)$.
+
+    ($\supseteq$) Similarly, if $h \in \mathcal{O}(f)$, then
+    \[
+    h(n) \leq M f(n) = M \cdot \frac{1}{c} (c f(n)),
+    \]
+    so $h \in \mathcal{O}(c f)$.
+
+    \item \textbf{If $f \leq g$ eventually, then $\mathcal{O}(f) \subseteq \mathcal{O}(g)$}
+
+    If $f(n) \leq g(n)$ for all $n \geq N_0$, and $h \in \mathcal{O}(f)$, then
+    \[
+    h(n) \leq M f(n) \leq M g(n),
+    \]
+    for all sufficiently large $n$. Hence $h \in \mathcal{O}(g)$.
+
+    \item \textbf{If $\mathcal{O}(f) \subseteq \mathcal{O}(g)$, then $\mathcal{O}(f+h) \subseteq \mathcal{O}(g+h)$}
+
+    Let $k \in \mathcal{O}(f+h)$, so
+    \[
+    k(n) \leq M(f(n)+h(n)).
+    \]
+    Since $f \in \mathcal{O}(g)$, we have $f(n) \leq M' g(n)$ for large $n$. Thus,
+    \[
+    k(n) \leq M(M'g(n) + h(n)) \leq M''(g(n)+h(n)),
+    \]
+    hence $k \in \mathcal{O}(g+h)$.
+
+    \item \textbf{If $h(n) > 0$ and $\mathcal{O}(f) \subseteq \mathcal{O}(g)$, then $\mathcal{O}(fh) \subseteq \mathcal{O}(gh)$}
+
+    Let $k \in \mathcal{O}(fh)$. Then
+    \[
+    k(n) \leq M f(n)h(n).
+    \]
+    Since $f(n) \leq M' g(n)$ for large $n$,
+    \[
+    k(n) \leq MM' g(n)h(n),
+    \]
+    hence $k \in \mathcal{O}(gh)$.
+\end{enumerate}
+
+\subsection*{Exercise 3}
+
+Let $i,j,k,n \in \mathbb{N}$.
+
+\begin{enumerate}
+    \item If $j \leq k$, then $n^j \leq n^k$ for $n \geq 1$, so
+    \[
+    \mathcal{O}(n^j) \subseteq \mathcal{O}(n^k).
+    \]
+
+    \item If $j \leq k$, then
+    \[
+    n^j + n^k \leq 2n^k,
+    \]
+    hence
+    \[
+    \mathcal{O}(n^j + n^k) \subseteq \mathcal{O}(n^k).
+    \]
+
+    \item For a polynomial,
+    \[
+    \sum_{i=0}^k a_i n^i \leq C n^k
+    \]
+    for some constant $C$, so
+    \[
+    \mathcal{O}\left(\sum_{i=0}^k a_i n^i\right) = \mathcal{O}(n^k).
+    \]
+
+    \item For $n \geq 2$, $\log n \leq n$, so
+    \[
+    \mathcal{O}(\log n) \subseteq \mathcal{O}(n).
+    \]
+
+    \item Since $\log n \leq n$,
+    \[
+    n \log n \leq n^2,
+    \]
+    hence
+    \[
+    \mathcal{O}(n \log n) \subseteq \mathcal{O}(n^2).
+    \]
+\end{enumerate}
+
+\subsection*{Exercise 4}
+
+\begin{enumerate}
+    \item $\mathcal{O}(\sqrt{n}) \subseteq \mathcal{O}(n)$ since $\sqrt{n} \leq n$.
+
+    \item $\mathcal{O}(n^2) \subseteq \mathcal{O}(2^n)$ since exponentials dominate polynomials.
+
+    \item $\mathcal{O}(\log n) \subseteq \mathcal{O}((\log n)^2)$ since $\log n \leq (\log n)^2$ for large $n$.
+
+    \item $\mathcal{O}(2^n) \subseteq \mathcal{O}(3^n)$ since $2^n \leq 3^n$.
+
+    \item $\mathcal{O}(\log_2 n) = \mathcal{O}(\log_3 n)$ since logarithms differ by a constant factor:
+    \[
+    \log_2 n = \frac{\log_3 n}{\log_3 2}.
+    \]
+\end{enumerate}
+
+\subsection*{Exercise 5}
+
+We compare runtimes of sorting algorithms:
+
+\begin{itemize}
+    \item \textbf{Bubble Sort vs. Insertion Sort:}  
+    Both have worst-case runtime $\mathcal{O}(n^2)$. However, insertion sort performs better on nearly sorted data ($\mathcal{O}(n)$ best case), while bubble sort generally remains inefficient.
+
+    \item \textbf{Insertion Sort vs. Merge Sort:}  
+    Insertion sort is $\mathcal{O}(n^2)$ in the worst case, while merge sort is $\mathcal{O}(n \log n)$ in all cases. Thus, merge sort is asymptotically more efficient.
+
+    \item \textbf{Merge Sort vs. Quick Sort:}  
+    Both have average runtime $\mathcal{O}(n \log n)$. However:
+    \begin{itemize}
+        \item Merge sort guarantees $\mathcal{O}(n \log n)$.
+        \item Quick sort has worst-case $\mathcal{O}(n^2)$ but is often faster in practice due to smaller constants and cache efficiency.
+    \end{itemize}
+\end{itemize}
+
+\textbf{Conclusion:}  
+Asymptotically, algorithms with $\mathcal{O}(n \log n)$ dominate $\mathcal{O}(n^2)$ algorithms, while practical performance may still depend on constants and input characteristics.
+
+\subsection*{Week 6 Discord Question}
+Big O ignores constant factors and lower-order terms, but in real implementations those can still affect performance, so how do we decide when two algorithms in the same Big O class are actually meaningfully different in practice?
+
 \section{Synthesis}
 
 \section{Evidence of Participation}
