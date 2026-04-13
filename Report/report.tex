@@ -1868,6 +1868,120 @@ Asymptotically, algorithms with $\mathcal{O}(n \log n)$ dominate $\mathcal{O}(n^
 \subsection*{Week 6 Discord Question}
 Big O ignores constant factors and lower-order terms, but in real implementations those can still affect performance, so how do we decide when two algorithms in the same Big O class are actually meaningfully different in practice?
 
+\subsection{Week 8}
+\section*{Exercise 1}
+
+\textbf{1.} 
+\[
+\varphi_1 := \neg((a \land b) \lor (\neg c \land d))
+\]
+
+\begin{align*}
+\varphi_1 
+&= \neg(a \land b) \land \neg(\neg c \land d) \\
+&= (\neg a \lor \neg b) \land (c \lor \neg d)
+\end{align*}
+
+\textbf{CNF:}
+\[
+(\neg a \lor \neg b) \land (c \lor \neg d)
+\]
+
+\vspace{1em}
+
+\textbf{2.}
+\[
+\varphi_2 := \neg((p \lor q) \rightarrow (r \land \neg s))
+\]
+
+\begin{align*}
+\varphi_2 
+&= \neg(\neg(p \lor q) \lor (r \land \neg s)) \\
+&= \neg(\neg(p \lor q)) \land \neg(r \land \neg s) \\
+&= (p \lor q) \land (\neg r \lor s)
+\end{align*}
+
+\textbf{CNF:}
+\[
+(p \lor q) \land (\neg r \lor s)
+\]
+
+\newpage
+
+\section*{Exercise 2}
+
+\textbf{1.}
+\[
+\psi_1 := (a \lor \neg b) \land (\neg a \lor b) \land (\neg a \lor \neg b)
+\]
+
+Try assignment: $a = \text{false},\ b = \text{false}$
+
+\begin{align*}
+(a \lor \neg b) &= F \lor T = T \\
+(\neg a \lor b) &= T \lor F = T \\
+(\neg a \lor \neg b) &= T \lor T = T
+\end{align*}
+
+\textbf{Conclusion:} Satisfiable.
+
+\vspace{1em}
+
+\textbf{2.}
+\[
+\psi_2 := (\neg p \lor q) \land (\neg q \lor r) \land \neg (\neg p \lor r)
+\]
+
+\begin{align*}
+\neg(\neg p \lor r) &= p \land \neg r
+\end{align*}
+
+So:
+\[
+= (\neg p \lor q) \land (\neg q \lor r) \land p \land \neg r
+\]
+
+From $p \land \neg r$:
+\[
+p = T,\quad r = F
+\]
+
+Substitute:
+\begin{align*}
+(\neg p \lor q) &= F \lor q = q \\
+(\neg q \lor r) &= \neg q \lor F = \neg q
+\end{align*}
+
+\[
+q \land \neg q
+\]
+
+\textbf{Conclusion:} Not satisfiable.
+
+\vspace{1em}
+
+\textbf{3.}
+\[
+\psi_3 := (x \lor y) \land (\neg x \lor y) \land (x \lor \neg y) \land (\neg x \lor \neg y)
+\]
+
+From the clauses:
+\[
+(x \lor y) \land (\neg x \lor y) \Rightarrow y
+\]
+\[
+(x \lor \neg y) \land (\neg x \lor \neg y) \Rightarrow \neg y
+\]
+
+\[
+y \land \neg y
+\]
+
+\textbf{Conclusion:} Not satisfiable.
+
+\subsection*{Week 6 Discord Question}
+When simplifying a Boolean formula to check satisfiability, sometimes certain variable assignments seem “forced” by the clauses (like setting a variable to true or false to satisfy multiple clauses at once). Is there a systematic way to identify these forced assignments early, and how does this relate to algorithms like unit propagation?
+
 \section{Synthesis}
 
 \section{Evidence of Participation}
