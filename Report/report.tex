@@ -1979,8 +1979,254 @@ y \land \neg y
 
 \textbf{Conclusion:} Not satisfiable.
 
-\subsection*{Week 6 Discord Question}
+\subsection*{Week 8 Discord Question}
 When simplifying a Boolean formula to check satisfiability, sometimes certain variable assignments seem “forced” by the clauses (like setting a variable to true or false to satisfy multiple clauses at once). Is there a systematic way to identify these forced assignments early, and how does this relate to algorithms like unit propagation?
+
+\subsection{Week 9}
+
+\section*{Exercise 1}
+
+\subsection*{1a) Show that 
+\[
+\varphi=(a\lor b)\land(\neg a\lor c)\land(\neg b\lor c)\land(\neg c\lor d)\land \neg d
+\]
+is unsatisfiable using resolution.}
+
+\subsubsection*{Step 1: Convert to clauses}
+
+\[
+\{\{a,b\},\{\neg a,c\},\{\neg b,c\},\{\neg c,d\},\{\neg d\}\}
+\]
+
+\subsubsection*{Step 2: Resolution Steps}
+
+\[
+\{\neg c,d\},\{\neg d\}\vdash \{\neg c\}
+\]
+
+\[
+\{\neg a,c\},\{\neg c\}\vdash \{\neg a\}
+\]
+
+\[
+\{\neg b,c\},\{\neg c\}\vdash \{\neg b\}
+\]
+
+\[
+\{a,b\},\{\neg a\}\vdash \{b\}
+\]
+
+\[
+\{b\},\{\neg b\}\vdash \Box
+\]
+
+\subsubsection*{Resolution Tree}
+
+\begin{center}
+\begin{tikzpicture}[node distance=1.8cm]
+\node (ab) at (0,0) {$\{a,b\}$};
+\node (ac) at (4,0) {$\{\neg a,c\}$};
+\node (bc) at (8,0) {$\{\neg b,c\}$};
+\node (cd) at (12,0) {$\{\neg c,d\}$};
+\node (d) at (16,0) {$\{\neg d\}$};
+
+\node (c) at (14,-2) {$\{\neg c\}$};
+\node (na) at (6,-4) {$\{\neg a\}$};
+\node (nb) at (10,-4) {$\{\neg b\}$};
+\node (b) at (3,-6) {$\{b\}$};
+\node (box) at (6,-8) {$\Box$};
+
+\draw[->] (cd)--(c);
+\draw[->] (d)--(c);
+\draw[->] (ac)--(na);
+\draw[->] (c)--(na);
+\draw[->] (bc)--(nb);
+\draw[->] (c)--(nb);
+\draw[->] (ab)--(b);
+\draw[->] (na)--(b);
+\draw[->] (b)--(box);
+\draw[->] (nb)--(box);
+\end{tikzpicture}
+\end{center}
+
+Therefore, $\varphi$ is unsatisfiable.
+
+\newpage
+
+\subsection*{1b) Show that 
+\[
+\psi=p\land q\land(\neg p\lor \neg q\lor r)\land(\neg r\lor s)\land \neg s
+\]
+is unsatisfiable using unit resolution.}
+
+\subsubsection*{Step 1: Convert to clauses}
+
+\[
+\{\{p\},\{q\},\{\neg p,\neg q,r\},\{\neg r,s\},\{\neg s\}\}
+\]
+
+\subsubsection*{Why is this Horn?}
+
+Each clause contains at most one positive literal.
+
+\subsubsection*{Unit Resolution Steps}
+
+\[
+\{p\},\{\neg p,\neg q,r\}\vdash \{\neg q,r\}
+\]
+
+\[
+\{q\},\{\neg q,r\}\vdash \{r\}
+\]
+
+\[
+\{r\},\{\neg r,s\}\vdash \{s\}
+\]
+
+\[
+\{s\},\{\neg s\}\vdash \Box
+\]
+
+\subsubsection*{Resolution Tree}
+
+\begin{center}
+\begin{tikzpicture}[node distance=2cm]
+\node (p) at (0,0) {$\{p\}$};
+\node (q) at (3,0) {$\{q\}$};
+\node (pqr) at (7,0) {$\{\neg p,\neg q,r\}$};
+\node (rs) at (11,0) {$\{\neg r,s\}$};
+\node (s) at (15,0) {$\{\neg s\}$};
+
+\node (qr) at (5,-2) {$\{\neg q,r\}$};
+\node (r) at (5,-4) {$\{r\}$};
+\node (sp) at (8,-6) {$\{s\}$};
+\node (box2) at (8,-8) {$\Box$};
+
+\draw[->] (p)--(qr);
+\draw[->] (pqr)--(qr);
+\draw[->] (q)--(r);
+\draw[->] (qr)--(r);
+\draw[->] (r)--(sp);
+\draw[->] (rs)--(sp);
+\draw[->] (sp)--(box2);
+\draw[->] (s)--(box2);
+\end{tikzpicture}
+\end{center}
+
+Therefore, $\psi$ is unsatisfiable.
+
+\newpage
+
+\section*{Exercise 2: Drone Control System}
+
+\subsection*{Step 1: Variables}
+
+\begin{align*}
+g &: \text{GPS lock valid} \\
+b &: \text{battery healthy} \\
+m &: \text{motor power enabled} \\
+o &: \text{manual override present}
+\end{align*}
+
+\subsection*{Step 2: Formalization}
+
+Policy:
+
+\[
+(g\land b)\to m
+\]
+
+\[
+o\to m
+\]
+
+\[
+\neg b \to \neg m
+\]
+
+Incident log:
+
+\[
+g,\quad \neg b,\quad o,\quad m
+\]
+
+Full formula:
+
+\[
+[(g\land b)\to m]\land(o\to m)\land(\neg b\to\neg m)\land g\land\neg b\land o\land m
+\]
+
+\subsection*{Step 3: Convert to Clauses}
+
+\[
+\{\neg g,\neg b,m\}
+\]
+
+\[
+\{\neg o,m\}
+\]
+
+\[
+\{b,\neg m\}
+\]
+
+\[
+\{g\},\{\neg b\},\{o\},\{m\}
+\]
+
+So the clause set is:
+
+\[
+\{
+\{\neg g,\neg b,m\},
+\{\neg o,m\},
+\{b,\neg m\},
+\{g\},
+\{\neg b\},
+\{o\},
+\{m\}
+\}
+\]
+
+\subsection*{Step 4: Resolution}
+
+\[
+\{b,\neg m\},\{\neg b\}\vdash \{\neg m\}
+\]
+
+\[
+\{\neg m\},\{m\}\vdash \Box
+\]
+
+\subsubsection*{Resolution Tree}
+
+\begin{center}
+\begin{tikzpicture}
+\node (bm) at (0,0) {$\{b,\neg m\}$};
+\node (nb) at (4,0) {$\{\neg b\}$};
+\node (nm) at (2,-2) {$\{\neg m\}$};
+\node (m) at (6,-2) {$\{m\}$};
+\node (box3) at (4,-4) {$\Box$};
+
+\draw[->] (bm)--(nm);
+\draw[->] (nb)--(nm);
+\draw[->] (nm)--(box3);
+\draw[->] (m)--(box3);
+\end{tikzpicture}
+\end{center}
+
+\subsection*{Conclusion}
+
+The incident log is inconsistent with the policy because battery unhealthy implies motor must be disabled, but the log states motor power is enabled.
+
+\[
+m\land \neg m
+\]
+
+Hence, the system state is contradictory.
+
+\subsection*{Week 9 Discord Question}
+In Exercise 2, if the incident log did not explicitly state that motor power was enabled, would the remaining facts still conflict with the policy, or would the clauses become satisfiable?
 
 \section{Synthesis}
 
