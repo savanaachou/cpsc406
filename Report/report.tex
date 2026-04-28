@@ -1986,7 +1986,7 @@ When simplifying a Boolean formula to check satisfiability, sometimes certain va
 
 \section*{Exercise 1}
 
-\subsection*{1a) Show that 
+\subsection*{1a Show that 
 \[
 \varphi=(a\lor b)\land(\neg a\lor c)\land(\neg b\lor c)\land(\neg c\lor d)\land \neg d
 \]
@@ -2053,7 +2053,7 @@ Therefore, $\varphi$ is unsatisfiable.
 
 \newpage
 
-\subsection*{1b) Show that 
+\subsection*{1b Show that 
 \[
 \psi=p\land q\land(\neg p\lor \neg q\lor r)\land(\neg r\lor s)\land \neg s
 \]
@@ -2227,6 +2227,143 @@ Hence, the system state is contradictory.
 
 \subsection*{Week 9 Discord Question}
 In Exercise 2, if the incident log did not explicitly state that motor power was enabled, would the remaining facts still conflict with the policy, or would the clauses become satisfiable?
+
+\subsection{Week 10}
+
+\section*{4.3-1}
+
+Show that the solution of $T(n)=T(n-1)+n$ is $O(n^2)$.
+
+We expand the recurrence repeatedly:
+
+\[
+T(n)=T(n-1)+n
+\]
+
+Substitute for $T(n-1)$:
+
+\[
+T(n)=T(n-2)+(n-1)+n
+\]
+
+Substitute again:
+
+\[
+T(n)=T(n-3)+(n-2)+(n-1)+n
+\]
+
+Continuing until the base case $T(1)$:
+
+\[
+T(n)=T(1)+2+3+4+\cdots+n
+\]
+
+Thus,
+
+\[
+T(n)=T(1)+\sum_{i=2}^{n} i
+\]
+
+Using the arithmetic series formula:
+
+\[
+\sum_{i=1}^{n} i=\frac{n(n+1)}{2}
+\]
+
+So,
+
+\[
+T(n)=T(1)+\frac{n(n+1)}{2}-1
+\]
+
+Therefore,
+
+\[
+T(n)=\frac{n^2+n}{2}+c
+\]
+
+for some constant $c$. The dominant term is $n^2$, so:
+
+\[
+T(n)=O(n^2)
+\]
+
+\section*{4.3-3}
+
+We are given:
+
+\[
+T(n)=2T(\lfloor n/2 \rfloor)+n
+\]
+
+We already know that this recurrence is $O(n\lg n)$. We now show that it is also $\Omega(n\lg n)$.
+
+Using a recursion tree:
+
+At level $0$, the work is:
+
+\[
+n
+\]
+
+At level $1$, there are $2$ subproblems of size $n/2$:
+
+\[
+2\left(\frac{n}{2}\right)=n
+\]
+
+At level $2$, there are $4$ subproblems of size $n/4$:
+
+\[
+4\left(\frac{n}{4}\right)=n
+\]
+
+In general, at level $k$:
+
+\[
+2^k\left(\frac{n}{2^k}\right)=n
+\]
+
+Thus, each level contributes $\Omega(n)$ work.
+
+The recursion stops when:
+
+\[
+\frac{n}{2^k}=1
+\]
+
+So,
+
+\[
+2^k=n
+\]
+
+\[
+k=\lg n
+\]
+
+Hence there are $\Theta(\lg n)$ levels.
+
+Since each level contributes $\Omega(n)$ work and there are $\Theta(\lg n)$ levels:
+
+\[
+T(n)=\Omega(n\lg n)
+\]
+
+Since we already know:
+
+\[
+T(n)=O(n\lg n)
+\]
+
+we conclude:
+
+\[
+T(n)=\Theta(n\lg n)
+\]
+
+\subsection*{Week 10 Discord Question}
+When using a recursion tree for a recurrence like T(n)=2T(n/2)+n, why does having the same amount of work at each level imply a logarithmic factor in the final runtime?
 
 \section{Synthesis}
 
